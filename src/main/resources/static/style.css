@@ -1,0 +1,191 @@
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #2C2A3A; /* dark background lavender/blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    background-color: #3E3B55; /* dark pastel container */
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 400px;
+    padding: 40px 30px;
+    color: #EDE7F6; /* light text for contrast */
+}
+
+/* Heading */
+.container h1.title {
+    text-align: center;
+    color: #FFD3B6; /* soft warm highlight */
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #5A5870; /* darker border */
+    border-radius: 12px;
+    background-color: #4A4660; /* darker input bg */
+    color: #EDE7F6; /* input text color */
+    outline: none;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder {
+    color: #BFB8D4; /* darker placeholder */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #A78CD9; /* darker pastel purple on focus */
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #7B9ACC; /* darker pastel blue */
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background-color: #5C78A3; /* slightly darker hover */
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    flex: 1;
+    background-color: #565272; /* dark tab bg */
+    color: #EDE7F6; /* tab text color */
+    margin: 0 5px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.tabs button.active {
+    background-color: #A78CD9; /* active tab highlight */
+    color: #fff;
+}
+
+/* Dashboard Sections */
+.dashboard-section {
+    margin-top: 20px;
+}
+
+.dashboard-section h2 {
+    color: #FFD3B6;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.dashboard-section p {
+    color: #EDE7F6;
+}
+
+/* Input icons */
+.input-icon {
+    position: relative;
+}
+
+.input-icon input {
+    padding-left: 40px; /* space for icon */
+}
+
+.input-icon svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    fill: #A78CD9; /* icon color */
+}
+
+/* Messages / notice */
+.message {
+    font-size: 13px;
+    color: #FFD3B6; /* warning/error messages */
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Terms / notice */
+.terms {
+    font-size: 12px;
+    color: #BFB8D4;
+    text-align: center;
+    margin-top: 15px;
+    line-height: 1.4;
+}
+
+.terms a {
+    color: #A78CD9;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.terms a:hover {
+    text-decoration: underline;
+}
+
+/* Chart Container */
+.chart-container {
+    background-color: #4A4660;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+/* Table (for future expenses/habits list) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    color: #EDE7F6;
+}
+
+table th,
+table td {
+    border: 1px solid #5A5870;
+    padding: 8px;
+    text-align: left;
+}
+
+table th {
+    background-color: #565272;
+    font-weight: 600;
+}
+
+table td {
+    background-color: #4A4660;
+}

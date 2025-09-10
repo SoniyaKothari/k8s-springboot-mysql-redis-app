@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Stats</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* General reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #2C2A3A;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #EDE7F6;
+}
+
+/* Container */
+.container {
+    background-color: #3E3B55;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 450px;
+    padding: 40px 30px;
+}
+
+/* Heading */
+.container h1.title {
+    text-align: center;
+    color: #FFD3B6;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    flex: 1;
+    background-color: #565272;
+    color: #EDE7F6;
+    margin: 0 5px;
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tabs button.active {
+    background-color: #A78CD9;
+    color: #fff;
+}
+
+/* Dashboard Sections */
+.dashboard-section {
+    margin-top: 20px;
+}
+
+.dashboard-section h2 {
+    color: #FFD3B6;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* Inputs & Buttons */
+.dashboard-section input {
+    width: calc(100% - 90px);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid #5A5870;
+    background-color: #4A4660;
+    color: #EDE7F6;
+    outline: none;
+    margin-right: 10px;
+}
+
+.dashboard-section button {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
+    background-color: #8FD9A8;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.dashboard-section button:hover {
+    background-color: #76c690;
+}
+
+/* Habit / Expense Lists */
+#habitList p, #expenseList p {
+    background-color: #4A4660;
+    padding: 8px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.habit-done {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.habit-undone {
+    background-color: #D32F2F;
+    color: #fff;
+}
+
+/* Summary */
+#summary {
+    background-color: #4A4660;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+/* Logout button */
+.logout-btn {
+    background-color: #FF6B6B;
+    color: #fff;
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #e05555;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="title">Overview</h1>
+
+    <div class="tabs">
+        <button onclick="showSection('habits')" class="active">Habits</button>
+        <button onclick="showSection('expenses')">Expenses</button>
+        <button onclick="showSection('summary')">Summary</button>
+    </div>
+
+    <div id="habits" class="dashboard-section">
+        <h2>Your Habits</h2>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="newHabit" placeholder="Add a new habit">
+            <button onclick="addHabit()">Add</button>
+        </div>
+        <div id="habitList"></div>
+    </div>
+
+    <div id="expenses" class="dashboard-section" style="display:none;">
+        <h2>Your Expenses</h2>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="expenseName" placeholder="Expense name">
+            <input type="number" id="expenseAmount" placeholder="Amount">
+            <button onclick="addExpense()">Add</button>
+        </div>
+        <div id="expenseList"></div>
+    </div>
+
+    <div id="summary" class="dashboard-section" style="display:none;"></div>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<!-- load app.js helpers first -->
+<script src="app.js"></script>
+
+<script>
+// Hardcoded userId for now
+const userId = 1;
+
+/*
+  Important: this inline script performs backend calls and then syncs UI state
+  into the app.js rendering layer (window.PP). That prevents double-sources of truth.
+*/
+
+/* Toggle sections */
+async function showSection(sectionId) {
+    document.querySelectorAll('.dashboard-section').forEach(sec => sec.style.display = 'none');
+    document.getElementById(sectionId).style.display = 'block';
+    document.querySelectorAll('.tabs button').forEach(btn=>btn.classList.remove('active'));
+    document.querySelector(`.tabs button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+
+    if(sectionId==='habits') await loadHabits();
+    if(sectionId==='expenses') await loadExpenses();
+    if(sectionId==='summary') await loadSummary();
+}
+
+/* Load habits from backend, then sync frontend state */
+async function loadHabits() {
+    try {
+        const res = await fetch(`/api/habits/${userId}`);
+        if (!res.ok) throw new Error('Failed fetching habits');
+        const arr = await res.json();
+        // sync into app.js state and render
+        if (window.PP && typeof window.PP.syncHabitsFromBackend === 'function') {
+            window.PP.syncHabitsFromBackend(arr);
+        } else {
+            // fallback: render minimally
+            console.warn('PP.syncHabitsFromBackend missing');
+        }
+    } catch (err) {
+        console.error('loadHabits error', err);
+        // keep UI responsive even on error
+    }
+}
+
+/* Mark habit as done: call backend then update frontend state via PP */
+async function markDone(id){
+    try {
+        // call backend to mark done/delete
+        await fetch(`/api/habits/${id}/done`, { method:'DELETE' });
+    } catch (err) {
+        console.warn('Backend delete failed (still trying to update frontend)', err);
+    } finally {
+        // Update frontend state locally (so it disappears immediately)
+        if (window.PP && typeof window.PP.markHabitDoneLocal === 'function') {
+            window.PP.markHabitDoneLocal(id);
+        } else {
+            console.warn('PP.markHabitDoneLocal missing');
+        }
+    }
+}
+
+/* Add habit */
+async function addHabit(){
+    const title = document.getElementById('newHabit').value.trim();
+    if(!title) return alert('Enter a habit!');
+    try {
+        const res = await fetch(`/api/habits/create/${userId}`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({title})
+        });
+        if (!res.ok) {
+            throw new Error('Failed to create habit');
+        }
+        // Prefer to re-load from backend (keeps ids correct)
+        document.getElementById('newHabit').value='';
+        await loadHabits();
+    } catch (err) {
+        console.error('addHabit error', err);
+        // As a fallback, add locally (best-effort)
+        if (window.PP && typeof window.PP.addHabitLocal === 'function') {
+            // create a temporary id (negative to reduce collisions)
+            const tempId = Date.now() * -1;
+            window.PP.addHabitLocal({ id: tempId, title });
+        }
+    }
+}
+
+/* Load expenses */
+async function loadExpenses(){
+    try {
+        const res = await fetch(`/api/expenses/${userId}`);
+        if (!res.ok) throw new Error('Failed fetching expenses');
+        const arr = await res.json();
+        if (window.PP && typeof window.PP.syncExpensesFromBackend === 'function') {
+            window.PP.syncExpensesFromBackend(arr);
+        }
+    } catch (err) {
+        console.error('loadExpenses error', err);
+    }
+}
+
+/* Add expense */
+async function addExpense(){
+    const name = document.getElementById('expenseName').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    if(!name || isNaN(amount)) return alert('Enter expense name and amount!');
+    try {
+        const res = await fetch(`/api/expenses/create/${userId}`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({name,amount})
+        });
+        if (!res.ok) throw new Error('Failed to create expense');
+        document.getElementById('expenseName').value='';
+        document.getElementById('expenseAmount').value='';
+        await loadExpenses();
+    } catch (err) {
+        console.error('addExpense error', err);
+        // fallback: add locally for immediate UX
+        if (window.PP && typeof window.PP.addExpenseLocal === 'function') {
+            window.PP.addExpenseLocal({ name, amount });
+        }
+    }
+}
+
+/* Load summary (backend + local state); local state takes precedence */
+async function loadSummary(){
+    try {
+        const res = await fetch(`/api/summary/${userId}`);
+        let summary = {};
+        if (res.ok) summary = await res.json();
+
+        // combine: use window.PP state primarily
+        const st = (window.PP && window.PP._state) ? window.PP._state : { habits: [], completedHabits: [], expenses: [] };
+        const totalExpenses = (st.expenses || []).reduce((s,e)=>s+(Number(e.amount)||0), 0);
+        const totalHabits = (st.habits ? st.habits.length : 0) + (st.completedHabits ? st.completedHabits.length : 0);
+        const completed = (st.completedHabits ? st.completedHabits.length : (summary.completedHabits || 0));
+
+        const container=document.getElementById('summary');
+        container.innerHTML=`
+            <h2>Weekly Summary 🌈</h2>
+            <p>Total Habits: ${totalHabits || summary.totalHabits || 0}</p>
+            <p>Completed Habits: ${completed || summary.completedHabits || 0}</p>
+            <p>Total Expense: ₹${(totalExpenses || summary.totalExpense || 0).toFixed ? (totalExpenses || summary.totalExpense || 0).toFixed(2) : totalExpenses}</p>
+        `;
+    } catch (err) {
+        console.error('loadSummary error', err);
+    }
+}
+
+/* Logout */
+function logout(){
+    fetch('/logout',{method:'POST'}).then(()=>window.location.href='/');
+}
+
+/* Ensure initial load uses backend */
+showSection('habits');
+</script>
+
+</body>
+</html>

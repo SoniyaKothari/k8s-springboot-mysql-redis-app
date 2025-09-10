@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-svc
+  namespace: dev
+spec:
+  selector:
+    app: redis
+  clusterIP: None
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379

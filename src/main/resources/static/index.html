@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PastelPlanner - Login / Register</title>
+<link rel="stylesheet" href="style.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title">☀️ HelloToday</h1>
+
+    <!-- Display error messages -->
+    <div id="errorMessage" class="message" style="color: #ff6b6b; display: none;"></div>
+    <div id="successMessage" class="message" style="color: #8FD9A8; display: none;"></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button id="loginTab" class="active">Login</button>
+        <button id="registerTab">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" action="/login" method="post">
+        <div class="input-icon">
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="input-icon">
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" action="/register" method="post" style="display: none;">
+        <div class="input-icon">
+            <input type="text" name="name" placeholder="Full Name" required>
+        </div>
+        <div class="input-icon">
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="input-icon">
+            <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn">Register</button>
+    </form>
+
+</div>
+
+<script>
+// Tab switching functionality
+document.getElementById('loginTab').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('registerTab').classList.remove('active');
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('registerForm').style.display = 'none';
+    clearMessages();
+});
+
+document.getElementById('registerTab').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('registerForm').style.display = 'block';
+    clearMessages();
+});
+
+// Handle URL parameters for error messages
+function checkUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    
+    if (error) {
+        const errorMessage = document.getElementById('errorMessage');
+        if (error === 'email_exists') {
+            errorMessage.textContent = 'Email already exists. Please use a different email.';
+        } else if (error === 'registration_failed') {
+            errorMessage.textContent = 'Registration failed. Please try again.';
+        } else {
+            errorMessage.textContent = 'An error occurred. Please try again.';
+        }
+        errorMessage.style.display = 'block';
+        
+        // Switch to register tab if there's an error
+        document.getElementById('registerTab').click();
+    }
+}
+
+function clearMessages() {
+    document.getElementById('errorMessage').style.display = 'none';
+    document.getElementById('successMessage').style.display = 'none';
+}
+
+// Check for errors on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkUrlParams();
+    
+    // Form submission handlers
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        clearMessages();
+    });
+    
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        clearMessages();
+        
+        // Basic client-side validation
+        const password = this.querySelector('input[name="password"]').value;
+        if (password.length < 6) {
+            e.preventDefault();
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = 'Password must be at least 6 characters long.';
+            errorMessage.style.display = 'block';
+        }
+    });
+});
+</script>
+</body>
+</html>
