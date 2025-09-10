@@ -4,7 +4,7 @@
 This project is a full-stack Spring Boot application with a frontend built using HTML, CSS, and JavaScript, backed by MySQL database and Redis for caching to improve performance. The application is containerized using Docker and can be deployed on Kubernetes clusters.
 
 ## Architecture
-![Architecture](assests/architecture.png)
+![Architecture](assets/architecture.png)
 
 The application follows a typical three-tier architecture:
 - **Frontend:** HTML/CSS/JavaScript client
