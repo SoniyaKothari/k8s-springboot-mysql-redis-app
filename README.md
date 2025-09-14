@@ -12,7 +12,7 @@ The application follows a typical three-tier architecture:
 - **Database:** MySQL with Redis caching layer
 
 ## Kubernetes Dashboard
-![Kubernetes Dashboard](monitoring/k8s dashboard.png)
+![Kubernetes Dashboard](monitoring/k8s-dashboard.png)
 *Complete cluster overview showing pod health, deployment status, and resource utilization across nodes*
 
 ## Prerequisites
