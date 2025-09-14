@@ -11,6 +11,10 @@ The application follows a typical three-tier architecture:
 - **Backend:** Spring Boot application
 - **Database:** MySQL with Redis caching layer
 
+## Kubernetes Dashboard
+![Kubernetes Dashboard](monitoring/k8s dashboard.png)
+*Complete cluster overview showing pod health, deployment status, and resource utilization across nodes*
+
 ## Prerequisites
 Before running this application, ensure you have one of the following setups:
 
